@@ -1,0 +1,49 @@
+flowchart TD
+
+    A["Razorpay Payment Event"] --> B{"Revenue at Risk?"}
+
+    B -->|"No"| Z["Ignore / Log"]
+    B -->|"Yes"| C["Hybrid Diagnosis"]
+
+    C -->|"Known Razorpay error"| D["Deterministic Diagnosis"]
+    C -->|"Ambiguous / Unstructured"| E["Gemini AI Fallback"]
+
+    D --> F["Diagnosis"]
+    E --> F
+
+    F --> G["Customer + Transaction Context"]
+
+    G --> H{"AI Recovery Decision"}
+
+    H -->|"Retry"| I["Policy & Safety Gate"]
+    H -->|"Reminder"| I
+    H -->|"Human Review"| J["Human Review"]
+    H -->|"Do Nothing"| Z2["Log / No Action"]
+
+    I -->|"Allowed"| K["Execute Recovery Action"]
+    I -->|"High Risk / Restricted"| J
+    I -->|"Opted Out / Blocked"| L["Block & Log"]
+    I -->|"Quiet Hours"| M["Delay Action"]
+
+    M --> K
+
+    J --> J1{"Human Approves?"}
+    J1 -->|"Yes"| K
+    J1 -->|"No"| Q["Stop & Close"]
+
+    K --> N["Payment State Verification"]
+
+    N -->|"Payment Confirmed"| O["Mark Paid → Fulfillment"]
+    N -->|"Not Confirmed"| P{"Recovery Limit Reached?"}
+
+    P -->|"No"| I
+    P -->|"Yes"| Q2["Stop / Escalate"]
+
+    O --> R["Audit Trail"]
+    Z --> R
+    Z2 --> R
+    L --> R
+    Q --> R
+    Q2 --> R
+
+    R --> S["Evaluation: 100+ Cases\nRecoverAI vs Baseline"]
