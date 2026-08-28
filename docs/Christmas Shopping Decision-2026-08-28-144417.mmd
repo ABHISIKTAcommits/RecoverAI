@@ -1,0 +1,42 @@
+---
+config:
+  layout: dagre
+---
+
+flowchart TB
+
+    A["Customer places order"] --> B["Payment Attempt"]
+
+    B -- Success --> C["Paid"]
+    B -- Failed / Abandoned --> D["Revenue at Risk"]
+
+    C --> E["Fulfillment"]
+
+    D --> F["Diagnose Failure"]
+    F --> G["Customer + Transaction Context"]
+    G --> H{"AI Decision"}
+
+    H -- Retry --> I["Recovery Action Proposed"]
+    H -- Reminder --> I
+    H -- Human Review --> M["Human Review / Stop"]
+    H -- Do Nothing --> J["Log & Close"]
+
+    I --> K{"Policy Gate: Is Action Allowed?"}
+
+    K -- Yes --> L["Execute Recovery"]
+    K -- No --> M
+
+    L --> N{"Verify Razorpay Payment Status"}
+
+    N -- Success --> O["Payment Confirmed → Mark Paid"]
+    N -- Not Success --> P{"Within Recovery Limits?"}
+
+    P -- Yes --> L
+    P -- No --> M
+
+    O --> E
+
+    J --> Q["Audit Trail"]
+    M --> Q
+    L --> Q
+    O --> Q
